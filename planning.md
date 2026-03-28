@@ -50,15 +50,6 @@ src/
 - `CircularProgress` for loading state
 - `Divider` if needed for section separation
 
-### Suggested Commit Messages
-
-- `setup vite app and mui`
-- `build app layout and search flow`
-- `add weather api fetching`
-- `render current weather and forecast`
-- `finish styling and error handling`
-- `prepare project for deployment and submission`
-
 ## Phase 1: Setup And Project Base
 
 ### Phase 1 Goal
@@ -67,19 +58,19 @@ Set up the React and Vite project so development can start with a clean structur
 
 ### Phase 1 Checklist
 
-- [ ] Create the app with Vite using the React template.
-- [ ] Confirm the project uses JSX files for components.
-- [ ] Install dependencies.
-- [ ] Install Material UI and its required packages.
-- [ ] Create the basic `src/` folder structure.
-- [ ] Clean up starter files that are not needed.
-- [ ] Confirm the app runs locally.
+- [x] Create the app with Vite using the React template.
+- [x] Confirm the project uses JSX files for components.
+- [x] Install dependencies.
+- [x] Install Material UI and its required packages.
+- [x] Create the basic `src/` folder structure.
+- [x] Clean up starter files that are not needed.
+- [x] Confirm the app runs locally.
 
 ### Phase 1 Commit Point
 
-- [ ] The app starts locally.
-- [ ] The starter code is cleaned up.
-- [ ] The folder structure is ready for feature work.
+- [x] The app starts locally.
+- [x] The starter code is cleaned up.
+- [x] The folder structure is ready for feature work.
 - [ ] Commit and push Phase 1.
 
 ### Phase 1 Deliverable
@@ -141,6 +132,7 @@ Connect the project to OpenWeatherMap in a safe and simple way and fetch data wi
 - [ ] Use `async/await` with `try/catch/finally`.
 - [ ] Update loading, success, and error state correctly.
 - [ ] Confirm repeated searches update the weather cleanly.
+- [ ] Auto-load weather for Nanaimo, BC, Canada on first visit.
 - [ ] Confirm requests work with a test city.
 
 ### Phase 3 Commit Point
@@ -148,6 +140,7 @@ Connect the project to OpenWeatherMap in a safe and simple way and fetch data wi
 - [ ] The API key is wired in through `VITE_` env config.
 - [ ] Weather requests work for a test city.
 - [ ] `useEffect` updates the data correctly after a search.
+- [ ] The first app load shows weather for Nanaimo, BC, Canada.
 - [ ] Commit and push Phase 3.
 
 ### Phase 3 Deliverable
@@ -175,6 +168,8 @@ Show the weather results in a clean, readable interface.
 - [ ] Show each forecast item in a simple MUI card or box.
 - [ ] Add a Celsius and Fahrenheit toggle.
 - [ ] Make sure temperature values update correctly when toggled.
+- [ ] Add weather icons or condition labels.
+- [ ] Show the local date and time for the searched city.
 - [ ] Keep the extra feature inside course-level complexity.
 
 ### Phase 4 Deliverable
@@ -186,6 +181,7 @@ A working weather dashboard with current weather and forecast results.
 - [ ] Current weather data renders clearly.
 - [ ] Forecast data renders correctly.
 - [ ] The unit toggle works.
+- [ ] Selected extra weather details render correctly.
 - [ ] Commit and push Phase 4.
 
 ## Phase 5: Styling, Responsiveness, And Reliability
@@ -260,12 +256,6 @@ Prepare the project for grading, deployment, and submission.
 ### Phase 6 Deliverable
 
 A submitted project that includes the repo, README, live site, and any helpful notes.
-
-### Extra Feature Ideas
-
-- [ ] Add weather icons or condition labels.
-- [ ] Show the local date and time for the searched city.
-- [ ] Auto-load weather for a default city on first visit.
 
 ## Recommended Component Plan
 
