@@ -2,7 +2,7 @@
 
 ## Assignment Details
 
-- Due: No due date
+- Due: April 09, 2026 at 11:59 PM
 - Points: 12
 - Submitting: a text entry box, a website URL, or a file upload
 

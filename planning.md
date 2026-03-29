@@ -23,15 +23,9 @@ src/
         SearchBar.jsx
         WeatherCard.jsx
         ForecastList.jsx
-        ForecastCard.jsx
         UnitToggle.jsx
         ErrorAlert.jsx
         LoadingSpinner.jsx
-    services/
-        weatherApi.js
-    utils/
-        formatWeather.js
-        temperature.js
     App.jsx
     main.jsx
     index.css
@@ -71,7 +65,7 @@ Set up the React and Vite project so development can start with a clean structur
 - [x] The app starts locally.
 - [x] The starter code is cleaned up.
 - [x] The folder structure is ready for feature work.
-- [ ] Commit and push Phase 1.
+- [x] Commit and push Phase 1.
 
 ### Phase 1 Deliverable
 
@@ -85,27 +79,27 @@ Build the app shell, add state, and make the search flow work.
 
 ### Phase 2 Checklist
 
-- [ ] Create the main `App.jsx` layout.
-- [ ] Use `Container`, `Box`, `Stack`, and `Typography` for the page layout.
-- [ ] Add state for search input.
-- [ ] Add state for weather data.
-- [ ] Add state for forecast data.
-- [ ] Add state for loading.
-- [ ] Add state for errors.
-- [ ] Add state for the temperature unit toggle.
-- [ ] Build a search form component.
-- [ ] Use MUI `TextField` for city input.
-- [ ] Use MUI `Button` for submit.
-- [ ] Allow city-name input.
-- [ ] Validate empty input before making requests.
-- [ ] Run the search on form submit.
-- [ ] Show helpful feedback for invalid searches.
+- [x] Create the main `App.jsx` layout.
+- [x] Use `Container`, `Box`, `Stack`, and `Typography` for the page layout.
+- [x] Add state for search input.
+- [x] Add state for weather data.
+- [x] Add state for forecast data.
+- [x] Add state for loading.
+- [x] Add state for errors.
+- [x] Add state for the temperature unit toggle.
+- [x] Build a search form component.
+- [x] Use MUI `TextField` for city input.
+- [x] Use MUI `Button` for submit.
+- [x] Allow city-name input.
+- [x] Validate empty input before making requests.
+- [x] Run the search on form submit.
+- [x] Show helpful feedback for invalid searches.
 
 ### Phase 2 Commit Point
 
-- [ ] The app layout is in place.
-- [ ] State is organized in a clear way.
-- [ ] The search form works and validates input.
+- [x] The app layout is in place.
+- [x] State is organized in a clear way.
+- [x] The search form works and validates input.
 - [ ] Commit and push Phase 2.
 
 ### Phase 2 Deliverable
@@ -122,10 +116,11 @@ Connect the project to OpenWeatherMap in a safe and simple way and fetch data wi
 
 - [ ] Register for an OpenWeatherMap API key.
 - [ ] Add the key to an environment file with a `VITE_` name.
-- [ ] Create a small API service file for requests.
-- [ ] Add functions for current weather data.
-- [ ] Add functions for forecast data.
-- [ ] Keep fetch logic readable and beginner-friendly.
+- [ ] Add `useEffect` in `App.jsx` for the weather request flow.
+- [ ] Keep the fetch logic inside `App.jsx` first.
+- [ ] Add one request for current weather data.
+- [ ] Add one request for forecast data.
+- [ ] Keep fetch logic readable and basic.
 - [ ] Decide what state change should trigger the fetch.
 - [ ] Use `useEffect` to run the fetch when that value changes.
 - [ ] Keep the fetch out of the component body.
@@ -145,7 +140,7 @@ Connect the project to OpenWeatherMap in a safe and simple way and fetch data wi
 
 ### Phase 3 Deliverable
 
-A reusable API layer with a course-aligned fetch flow.
+A fetch flow in `App.jsx` using `useEffect`, loading state, and error handling.
 
 ## Phase 4: Weather UI And Forecast
 
@@ -170,7 +165,7 @@ Show the weather results in a clean, readable interface.
 - [ ] Make sure temperature values update correctly when toggled.
 - [ ] Add weather icons or condition labels.
 - [ ] Show the local date and time for the searched city.
-- [ ] Keep the extra feature inside course-level complexity.
+- [ ] Keep the extra feature simple and useful.
 
 ### Phase 4 Deliverable
 

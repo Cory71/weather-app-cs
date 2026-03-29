@@ -1,9 +1,14 @@
 :root {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --app-background: linear-gradient(180deg, #dff4ff 0%, #f6fbff 38%, #fff7ed 100%);
+  --app-text: #17324a;
+  --app-panel: rgba(255, 255, 255, 0.88);
+  --app-panel-border: rgba(23, 50, 74, 0.12);
+  --app-shadow: 0 24px 60px rgba(23, 50, 74, 0.12);
+  font-family: 'Aptos', 'Trebuchet MS', 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #163046;
-  background: #eef4f7;
+  color: var(--app-text);
+  background: var(--app-background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -17,6 +22,7 @@
 body {
   margin: 0;
   min-width: 320px;
+  background: var(--app-background);
 }
 
 button,
@@ -32,44 +38,75 @@ select {
 
 .app-shell {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
+  position: relative;
 }
 
-.app-panel {
-  width: min(100%, 720px);
-  padding: 40px 32px;
-  border-radius: 20px;
-  background: #ffffff;
-  box-shadow: 0 18px 50px rgba(22, 48, 70, 0.08);
-  text-align: center;
+.app-shell::before,
+.app-shell::after {
+  content: '';
+  position: fixed;
+  inset: auto;
+  border-radius: 999px;
+  pointer-events: none;
+  filter: blur(20px);
+}
+
+.app-shell::before {
+  top: 48px;
+  left: 28px;
+  width: 220px;
+  height: 220px;
+  background: rgba(100, 197, 255, 0.24);
+}
+
+.app-shell::after {
+  right: 24px;
+  bottom: 40px;
+  width: 260px;
+  height: 260px;
+  background: rgba(255, 180, 77, 0.18);
+}
+
+.hero-panel {
+  padding: clamp(24px, 5vw, 40px);
+  border: 1px solid var(--app-panel-border);
+  border-radius: 28px;
+  background: var(--app-panel);
+  box-shadow: var(--app-shadow);
+  backdrop-filter: blur(10px);
 }
 
 .app-kicker {
-  margin: 0 0 12px;
+  margin: 0;
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #2f6f94;
+  color: #236f95;
 }
 
-h1 {
-  margin: 0 0 16px;
+.app-title {
+  margin: 0;
   font-size: clamp(2rem, 5vw, 3.4rem);
   line-height: 1.1;
+  letter-spacing: -0.04em;
 }
 
 .app-copy {
   margin: 0;
   font-size: 1.05rem;
+  max-width: 56ch;
   color: #486276;
 }
 
+.content-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 @media (max-width: 640px) {
-  .app-panel {
-    padding: 32px 20px;
+  .content-grid {
+    grid-template-columns: 1fr;
   }
 }
