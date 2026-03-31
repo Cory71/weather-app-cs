@@ -1,3 +1,4 @@
+/* Global theme values */
 :root {
   --app-background: linear-gradient(180deg, #dff4ff 0%, #f6fbff 38%, #fff7ed 100%);
   --app-text: #17324a;
@@ -15,16 +16,19 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Global element reset */
 * {
   box-sizing: border-box;
 }
 
+/* Page base styles */
 body {
   margin: 0;
   min-width: 320px;
   background: var(--app-background);
 }
 
+/* Form font reset */
 button,
 input,
 textarea,
@@ -32,15 +36,18 @@ select {
   font: inherit;
 }
 
+/* Root mount point */
 #root {
   min-height: 100vh;
 }
 
+/* App shell layout */
 .app-shell {
   min-height: 100vh;
   position: relative;
 }
 
+/* Background glow shapes */
 .app-shell::before,
 .app-shell::after {
   content: '';
@@ -51,6 +58,7 @@ select {
   filter: blur(20px);
 }
 
+/* Top glow shape */
 .app-shell::before {
   top: 48px;
   left: 28px;
@@ -59,6 +67,7 @@ select {
   background: rgba(100, 197, 255, 0.24);
 }
 
+/* Bottom glow shape */
 .app-shell::after {
   right: 24px;
   bottom: 40px;
@@ -67,6 +76,7 @@ select {
   background: rgba(255, 180, 77, 0.18);
 }
 
+/* Hero panel */
 .hero-panel {
   padding: clamp(24px, 5vw, 40px);
   border: 1px solid var(--app-panel-border);
@@ -76,6 +86,7 @@ select {
   backdrop-filter: blur(10px);
 }
 
+/* Small heading text */
 .app-kicker {
   margin: 0;
   font-size: 0.95rem;
@@ -85,6 +96,7 @@ select {
   color: #236f95;
 }
 
+/* Main app title */
 .app-title {
   margin: 0;
   font-size: clamp(2rem, 5vw, 3.4rem);
@@ -92,6 +104,7 @@ select {
   letter-spacing: -0.04em;
 }
 
+/* Intro text */
 .app-copy {
   margin: 0;
   font-size: 1.05rem;
@@ -99,12 +112,14 @@ select {
   color: #486276;
 }
 
+/* Main content grid */
 .content-grid {
   display: grid;
   gap: 20px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+/* Small screen layout */
 @media (max-width: 640px) {
   .content-grid {
     grid-template-columns: 1fr;

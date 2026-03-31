@@ -4,6 +4,7 @@ import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
 import './index.css'
 import App from './App.jsx'
 
+// App theme setup
 const appTheme = createTheme({
   palette: {
     primary: {
@@ -30,10 +31,11 @@ const appTheme = createTheme({
   },
 })
 
+// App render
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThemeProvider theme={appTheme}>
-      <CssBaseline />
+      <CssBaseline /> {/* Reset browser defaults for a cleaner base. */}
       <App />
     </ThemeProvider>
   </StrictMode>,

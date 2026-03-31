@@ -1,5 +1,6 @@
 import { CircularProgress, Stack, Typography } from '@mui/material'
 
+// Loading spinner component
 function LoadingSpinner({ isLoading }) {
   // Loading state display
   if (!isLoading) {

@@ -100,7 +100,7 @@ Build the app shell, add state, and make the search flow work.
 - [x] The app layout is in place.
 - [x] State is organized in a clear way.
 - [x] The search form works and validates input.
-- [ ] Commit and push Phase 2.
+- [x] Commit and push Phase 2.
 
 ### Phase 2 Deliverable
 
@@ -114,29 +114,29 @@ Connect the project to OpenWeatherMap in a safe and simple way and fetch data wi
 
 ### Phase 3 Checklist
 
-- [ ] Register for an OpenWeatherMap API key.
-- [ ] Add the key to an environment file with a `VITE_` name.
-- [ ] Add `useEffect` in `App.jsx` for the weather request flow.
-- [ ] Keep the fetch logic inside `App.jsx` first.
-- [ ] Add one request for current weather data.
-- [ ] Add one request for forecast data.
-- [ ] Keep fetch logic readable and basic.
-- [ ] Decide what state change should trigger the fetch.
-- [ ] Use `useEffect` to run the fetch when that value changes.
-- [ ] Keep the fetch out of the component body.
-- [ ] Use `async/await` with `try/catch/finally`.
-- [ ] Update loading, success, and error state correctly.
-- [ ] Confirm repeated searches update the weather cleanly.
-- [ ] Auto-load weather for Nanaimo, BC, Canada on first visit.
-- [ ] Confirm requests work with a test city.
+- [x] Register for an OpenWeatherMap API key.
+- [x] Add the key to an environment file with a `VITE_` name.
+- [x] Add `useEffect` in `App.jsx` for the weather request flow.
+- [x] Keep the fetch logic inside `App.jsx` first.
+- [x] Add one request for current weather data.
+- [x] Add one request for forecast data.
+- [x] Keep fetch logic readable and basic.
+- [x] Decide what state change should trigger the fetch.
+- [x] Use `useEffect` to run the fetch when that value changes.
+- [x] Keep the fetch out of the component body.
+- [x] Use `async/await` with `try/catch/finally`.
+- [x] Update loading, success, and error state correctly.
+- [x] Confirm repeated searches update the weather cleanly.
+- [x] Auto-load weather for Nanaimo, BC, Canada on first visit.
+- [x] Confirm requests work with a test city.
 
 ### Phase 3 Commit Point
 
-- [ ] The API key is wired in through `VITE_` env config.
-- [ ] Weather requests work for a test city.
-- [ ] `useEffect` updates the data correctly after a search.
-- [ ] The first app load shows weather for Nanaimo, BC, Canada.
-- [ ] Commit and push Phase 3.
+- [x] The API key is wired in through `VITE_` env config.
+- [x] Weather requests work for a test city.
+- [x] `useEffect` updates the data correctly after a search.
+- [x] The first app load shows weather for Nanaimo, BC, Canada.
+- [x] Commit and push Phase 3.
 
 ### Phase 3 Deliverable
 
@@ -154,22 +154,26 @@ Show the weather results in a clean, readable interface.
 - [ ] Use MUI `Card`, `CardContent`, and `Typography`.
 - [ ] Show city name.
 - [ ] Show temperature.
+- [ ] Show feels-like temperature.
+- [ ] Show daily high and low temperature.
 - [ ] Show humidity.
 - [ ] Show wind speed.
+- [ ] Show wind direction.
 - [ ] Show weather condition text.
 - [ ] Show an icon if it improves clarity.
+- [ ] Show sunrise and sunset time.
 - [ ] Add a five-day forecast section.
 - [ ] Display forecast entries with `.map()`.
 - [ ] Show each forecast item in a simple MUI card or box.
 - [ ] Add a Celsius and Fahrenheit toggle.
 - [ ] Make sure temperature values update correctly when toggled.
 - [ ] Add weather icons or condition labels.
+- [ ] Show precipitation chance in forecast entries.
 - [ ] Show the local date and time for the searched city.
-- [ ] Keep the extra feature simple and useful.
 
 ### Phase 4 Deliverable
 
-A working weather dashboard with current weather and forecast results.
+A working weather dashboard with current weather, forecast results, and a few clear extra weather details.
 
 ### Phase 4 Commit Point
 

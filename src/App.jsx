@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Container, Stack, Typography } from '@mui/material'
 import ErrorAlert from './components/ErrorAlert.jsx'
 import ForecastList from './components/ForecastList.jsx'
@@ -7,28 +7,91 @@ import SearchBar from './components/SearchBar.jsx'
 import UnitToggle from './components/UnitToggle.jsx'
 import WeatherCard from './components/WeatherCard.jsx'
 
-function getSearchHelperText(selectedCity, errorMessage) {
-  // Search input helper copy
+const DEFAULT_CITY = 'Nanaimo,CA'
+const WEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5'
+
+// API key helper
+function getOpenWeatherApiKey() {
+  return import.meta.env.VITE_OPENWEATHER_API_KEY?.trim() ?? ''
+}
+
+// Request URL helper
+function buildRequestUrl(pathname, cityName, apiKey) {
+  const queryString = new URLSearchParams({
+    q: cityName,
+    appid: apiKey,
+    units: 'metric', // Start with metric so Celsius mode is the base data.
+  }).toString()
+
+  return `${WEATHER_BASE_URL}/${pathname}?${queryString}`
+}
+
+// Error message helpers
+function getMissingApiKeyMessage() {
+  return 'Add your OpenWeatherMap API key to a .env file as VITE_OPENWEATHER_API_KEY.'
+}
+
+function getRequestErrorMessage(apiMessage) {
+  if (!apiMessage) {
+    return 'Unable to load weather data right now. Please try again.'
+  }
+
+  if (apiMessage.toLowerCase() === 'city not found') {
+    return 'We could not find that city. Check the spelling and try again.'
+  }
+
+  return `Weather request failed: ${apiMessage}.`
+}
+
+async function readErrorMessage(response) {
+  try {
+    const responseData = await response.json()
+    return getRequestErrorMessage(responseData.message)
+  } catch {
+    return getRequestErrorMessage('Unexpected server response')
+  }
+}
+
+// Forecast helper
+function getForecastPreviewItems(forecastItems) {
+  const middayItems = forecastItems.filter((forecastItem) => forecastItem.dt_txt?.includes('12:00:00'))
+
+  if (middayItems.length >= 5) {
+    return middayItems.slice(0, 5)
+  }
+
+  return forecastItems.filter((forecastItem, index) => index % 8 === 0).slice(0, 5) // About 8 entries is one day in 3-hour data.
+}
+
+// Search helper text
+function getSearchHelperText(selectedCity, errorMessage, isLoading) {
   if (errorMessage) {
     return 'Add a city name, then submit the form again.'
+  }
+
+  if (isLoading) {
+    return `Loading weather for ${selectedCity}...`
   }
 
   if (!selectedCity) {
     return 'Try Nanaimo, Vancouver, or Toronto.'
   }
 
-  return `Search is set for ${selectedCity}. Weather data will connect in Phase 3.`
+  return `Search is set for ${selectedCity}. Submit the form to load fresh weather data.`
 }
 
 function App() {
-  const [searchInput, setSearchInput] = useState('')
-  const [selectedCity, setSelectedCity] = useState('')
+  // App state
+  const [searchInput, setSearchInput] = useState(DEFAULT_CITY)
+  const [selectedCity, setSelectedCity] = useState(DEFAULT_CITY)
   const [weatherData, setWeatherData] = useState(null)
   const [forecastData, setForecastData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [temperatureUnit, setTemperatureUnit] = useState('celsius')
+  const [searchVersion, setSearchVersion] = useState(0)
 
+  // Search handlers
   function handleSearchInputChange(event) {
     const nextValue = event.target.value
 
@@ -46,7 +109,7 @@ function App() {
   function handleSearchSubmit(event) {
     event.preventDefault()
 
-    const cityName = searchInput.trim()
+    const cityName = searchInput.trim() // Remove spaces before validation.
 
     if (!cityName) {
       setIsLoading(false)
@@ -62,9 +125,78 @@ function App() {
     setSelectedCity(cityName)
     setWeatherData(null)
     setForecastData([])
+    setSearchVersion((currentVersion) => currentVersion + 1) // Force a fresh fetch, even for the same city.
   }
 
-  const searchHelperText = getSearchHelperText(selectedCity, errorMessage)
+  // Weather fetch effect
+  useEffect(() => {
+    const apiKey = getOpenWeatherApiKey()
+
+    if (!selectedCity) {
+      return undefined
+    }
+
+    if (!apiKey) {
+      setIsLoading(false)
+      setWeatherData(null)
+      setForecastData([])
+      setErrorMessage(getMissingApiKeyMessage())
+      return undefined
+    }
+
+    const abortController = new AbortController() // Cancel old requests when the city changes fast.
+
+    async function fetchWeatherData() {
+      setIsLoading(true)
+      setErrorMessage('')
+
+      try {
+        const weatherUrl = buildRequestUrl('weather', selectedCity, apiKey)
+        const forecastUrl = buildRequestUrl('forecast', selectedCity, apiKey)
+
+        const [weatherResponse, forecastResponse] = await Promise.all([
+          fetch(weatherUrl, { signal: abortController.signal }),
+          fetch(forecastUrl, { signal: abortController.signal }),
+        ]) // Load both endpoints together to keep the UI in sync.
+
+        if (!weatherResponse.ok) {
+          throw new Error(await readErrorMessage(weatherResponse))
+        }
+
+        if (!forecastResponse.ok) {
+          throw new Error(await readErrorMessage(forecastResponse))
+        }
+
+        const [weatherResponseData, forecastResponseData] = await Promise.all([
+          weatherResponse.json(),
+          forecastResponse.json(),
+        ])
+
+        setWeatherData(weatherResponseData)
+        setForecastData(getForecastPreviewItems(forecastResponseData.list ?? []))
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          return
+        }
+
+        setWeatherData(null)
+        setForecastData([])
+        setErrorMessage(error.message)
+      } finally {
+        if (!abortController.signal.aborted) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    fetchWeatherData()
+
+    return () => {
+      abortController.abort()
+    }
+  }, [searchVersion, selectedCity])
+
+  const searchHelperText = getSearchHelperText(selectedCity, errorMessage, isLoading)
 
   // Main app layout
   return (
@@ -74,13 +206,13 @@ function App() {
           <Box className="hero-panel">
             <Stack spacing={3}>
               <Stack spacing={1.5}>
-                <Typography className="app-kicker">Phase 2 Layout And Search</Typography>
+                <Typography className="app-kicker">Phase 3 API Setup And Fetch Flow</Typography>
                 <Typography variant="h1" className="app-title">
                   SkyCast
                 </Typography>
                 <Typography className="app-copy">
-                  The app shell, search form, and core state are ready for the
-                  OpenWeatherMap fetch work in the next phase.
+                  The app now reads an OpenWeatherMap API key from your env file
+                  and fetches current weather plus forecast data for the active city.
                 </Typography>
               </Stack>
 
@@ -108,7 +240,11 @@ function App() {
               weatherData={weatherData}
             />
 
-            <ForecastList forecastData={forecastData} selectedCity={selectedCity} />
+            <ForecastList
+              forecastData={forecastData}
+              selectedCity={selectedCity}
+              temperatureUnit={temperatureUnit}
+            />
           </Box>
         </Stack>
       </Container>

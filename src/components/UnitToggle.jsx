@@ -1,5 +1,6 @@
 import { Button, Stack, Typography } from '@mui/material'
 
+// Temperature unit toggle
 function UnitToggle({ temperatureUnit, onUnitChange }) {
   // Unit switcher buttons
   return (
@@ -8,6 +9,7 @@ function UnitToggle({ temperatureUnit, onUnitChange }) {
         Temperature unit
       </Typography>
 
+      {/* Toggle buttons */}
       <Stack direction="row" spacing={1}>
         <Button
           variant={temperatureUnit === 'celsius' ? 'contained' : 'outlined'}

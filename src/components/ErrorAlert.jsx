@@ -1,5 +1,6 @@
 import Alert from '@mui/material/Alert'
 
+// Error alert component
 function ErrorAlert({ message }) {
   // Error message display
   if (!message) {
