@@ -86,6 +86,7 @@ function App() {
   const [selectedCity, setSelectedCity] = useState(DEFAULT_CITY)
   const [weatherData, setWeatherData] = useState(null)
   const [forecastData, setForecastData] = useState([])
+  const [forecastEntries, setForecastEntries] = useState([]) // Keep the full list for day-based forecast details.
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [temperatureUnit, setTemperatureUnit] = useState('celsius')
@@ -116,6 +117,7 @@ function App() {
       setSelectedCity('')
       setWeatherData(null)
       setForecastData([])
+      setForecastEntries([])
       setErrorMessage('Please enter a city name before searching.')
       return
     }
@@ -125,6 +127,7 @@ function App() {
     setSelectedCity(cityName)
     setWeatherData(null)
     setForecastData([])
+    setForecastEntries([])
     setSearchVersion((currentVersion) => currentVersion + 1) // Force a fresh fetch, even for the same city.
   }
 
@@ -140,6 +143,7 @@ function App() {
       setIsLoading(false)
       setWeatherData(null)
       setForecastData([])
+      setForecastEntries([])
       setErrorMessage(getMissingApiKeyMessage())
       return undefined
     }
@@ -172,8 +176,11 @@ function App() {
           forecastResponse.json(),
         ])
 
+        const allForecastEntries = forecastResponseData.list ?? [] // Fall back to an empty list if the API omits forecast items.
+
         setWeatherData(weatherResponseData)
-        setForecastData(getForecastPreviewItems(forecastResponseData.list ?? []))
+        setForecastEntries(allForecastEntries)
+        setForecastData(getForecastPreviewItems(allForecastEntries))
       } catch (error) {
         if (error.name === 'AbortError') {
           return
@@ -181,6 +188,7 @@ function App() {
 
         setWeatherData(null)
         setForecastData([])
+        setForecastEntries([])
         setErrorMessage(error.message)
       } finally {
         if (!abortController.signal.aborted) {
@@ -242,6 +250,7 @@ function App() {
 
             <ForecastList
               forecastData={forecastData}
+              forecastEntries={forecastEntries}
               selectedCity={selectedCity}
               temperatureUnit={temperatureUnit}
             />

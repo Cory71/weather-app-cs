@@ -150,26 +150,29 @@ Show the weather results in a clean, readable interface.
 
 ### Phase 4 Checklist
 
-- [ ] Create a current weather display component.
-- [ ] Use MUI `Card`, `CardContent`, and `Typography`.
-- [ ] Show city name.
-- [ ] Show temperature.
-- [ ] Show feels-like temperature.
-- [ ] Show daily high and low temperature.
-- [ ] Show humidity.
-- [ ] Show wind speed.
-- [ ] Show wind direction.
-- [ ] Show weather condition text.
-- [ ] Show an icon if it improves clarity.
-- [ ] Show sunrise and sunset time.
-- [ ] Add a five-day forecast section.
-- [ ] Display forecast entries with `.map()`.
-- [ ] Show each forecast item in a simple MUI card or box.
-- [ ] Add a Celsius and Fahrenheit toggle.
-- [ ] Make sure temperature values update correctly when toggled.
-- [ ] Add weather icons or condition labels.
-- [ ] Show precipitation chance in forecast entries.
-- [ ] Show the local date and time for the searched city.
+- [x] Create a current weather display component.
+- [x] Use MUI `Card`, `CardContent`, and `Typography`.
+- [x] Show city name.
+- [x] Show temperature.
+- [x] Show feels-like temperature.
+- [x] Show daily high and low temperature.
+- [x] Show humidity.
+- [x] Show wind speed.
+- [x] Show wind direction.
+- [x] Show weather condition text.
+- [x] Show an icon if it improves clarity.
+- [x] Show sunrise and sunset time.
+- [x] Add a five-day forecast section.
+- [x] Display forecast entries with `.map()`.
+- [x] Show each forecast item in a simple MUI card or box.
+- [x] Add a Celsius and Fahrenheit toggle.
+- [x] Make sure temperature values update correctly when toggled.
+- [x] Add weather icons or condition labels.
+- [x] Show precipitation chance in forecast entries.
+- [x] Show the local date and time for the searched city.
+- [x] Show visibility for the searched city.
+- [x] Show cloud coverage for the searched city.
+- [x] Show rain or snow amount in forecast entries.
 
 ### Phase 4 Deliverable
 
@@ -177,11 +180,11 @@ A working weather dashboard with current weather, forecast results, and a few cl
 
 ### Phase 4 Commit Point
 
-- [ ] Current weather data renders clearly.
-- [ ] Forecast data renders correctly.
-- [ ] The unit toggle works.
-- [ ] Selected extra weather details render correctly.
-- [ ] Commit and push Phase 4.
+- [x] Current weather data renders clearly.
+- [x] Forecast data renders correctly.
+- [x] The unit toggle works.
+- [x] Selected extra weather details render correctly.
+- [x] Commit and push Phase 4.
 
 ## Phase 5: Styling, Responsiveness, And Reliability
 
@@ -193,6 +196,8 @@ Polish the app so it looks clean, responds well on different screens, and handle
 
 - [ ] Use Material UI spacing and layout props for most styling.
 - [ ] Keep spacing, typography, and colors consistent.
+- [ ] Add a light and dark mode toggle.
+- [ ] Update the Material UI theme so both modes look intentional and readable.
 - [ ] Make the layout work on mobile, tablet, and desktop.
 - [ ] Use `sx` for small one-off styling changes.
 - [ ] Keep custom styling minimal and readable.
@@ -200,7 +205,7 @@ Polish the app so it looks clean, responds well on different screens, and handle
 - [ ] Handle invalid city names.
 - [ ] Handle failed API requests.
 - [ ] Handle slow-loading states.
-- [ ] Show clear and beginner-friendly error messages with MUI `Alert`.
+- [ ] Show clear error messages with MUI `Alert`.
 - [ ] Show loading state with MUI `CircularProgress`.
 - [ ] Prevent broken UI when data is missing.
 
@@ -290,7 +295,7 @@ A submitted project that includes the repo, README, live site, and any helpful n
 - [ ] The user can search by location.
 - [ ] The app shows current weather details.
 - [ ] The app shows a five-day forecast or similar forecast view.
-- [ ] The app includes a Celsius and Fahrenheit toggle or another course-safe extra feature.
+- [ ] The app includes a Celsius and Fahrenheit toggle or another extra feature.
 - [ ] The app uses Material UI for the main visual components.
 - [ ] The app uses `useEffect` for API requests.
 - [ ] The UI is responsive.

@@ -1,4 +1,4 @@
-import { Card, CardContent, Chip, Stack, Typography } from '@mui/material'
+import { Box, Card, CardContent, Chip, Stack, Typography } from '@mui/material'
 
 // Temperature helpers
 function convertTemperature(celsiusValue, temperatureUnit) {
@@ -38,6 +38,21 @@ function formatWindDirection(windDegrees) {
   return compassDirections[compassIndex]
 }
 
+// Visibility helper
+function formatVisibility(visibilityInMeters, temperatureUnit) {
+  if (visibilityInMeters == null) {
+    return '--'
+  }
+
+  if (temperatureUnit === 'fahrenheit') {
+    const visibilityInMiles = visibilityInMeters / 1609.344
+    return `${visibilityInMiles.toFixed(1)} mi`
+  }
+
+  const visibilityInKilometers = visibilityInMeters / 1000
+  return `${visibilityInKilometers.toFixed(1)} km`
+}
+
 // Display text helpers
 function getLocationLabel(weatherData, selectedCity) {
   if (!weatherData) {
@@ -68,6 +83,30 @@ function formatCityTime(unixTime, timezoneOffsetInSeconds) {
   })
 }
 
+function formatCityDateTime(unixTime, timezoneOffsetInSeconds) {
+  if (unixTime == null || timezoneOffsetInSeconds == null) {
+    return '--'
+  }
+
+  const cityTime = new Date((unixTime + timezoneOffsetInSeconds) * 1000)
+
+  return cityTime.toLocaleString([], {
+    weekday: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: 'UTC', // Use UTC here because the API offset is already added above.
+  })
+}
+
+// Icon helper
+function getWeatherIconUrl(iconCode) {
+  if (!iconCode) {
+    return ''
+  }
+
+  return `https://openweathermap.org/img/wn/${iconCode}@2x.png`
+}
+
 function getWeatherMessage(selectedCity, weatherData) {
   if (!selectedCity) {
     return 'Search for a city to prepare the current weather panel.'
@@ -86,11 +125,17 @@ function WeatherCard({ selectedCity, temperatureUnit, weatherData }) {
   const locationLabel = getLocationLabel(weatherData, selectedCity)
   const message = getWeatherMessage(selectedCity, weatherData)
   const temperatureLabel = weatherData?.main ? formatTemperature(weatherData.main.temp, temperatureUnit) : '--'
+  const feelsLikeLabel = weatherData?.main ? formatTemperature(weatherData.main.feels_like, temperatureUnit) : '--'
   const humidityLabel = weatherData?.main?.humidity != null ? `${weatherData.main.humidity}%` : '--'
   const windSpeedLabel = weatherData?.wind?.speed != null ? formatWindSpeed(weatherData.wind.speed, temperatureUnit) : '--'
   const windDirectionLabel = formatWindDirection(weatherData?.wind?.deg)
+  const visibilityLabel = formatVisibility(weatherData?.visibility, temperatureUnit)
+  const cloudCoverageLabel = weatherData?.clouds?.all != null ? `${weatherData.clouds.all}%` : '--'
   const sunriseLabel = formatCityTime(weatherData?.sys?.sunrise, weatherData?.timezone)
   const sunsetLabel = formatCityTime(weatherData?.sys?.sunset, weatherData?.timezone)
+  const localTimeLabel = formatCityDateTime(weatherData?.dt, weatherData?.timezone)
+  const weatherIconUrl = getWeatherIconUrl(weatherData?.weather?.[0]?.icon)
+  const weatherIconAlt = weatherData?.weather?.[0]?.description || 'Weather icon'
 
   // Current weather panel
   return (
@@ -110,25 +155,53 @@ function WeatherCard({ selectedCity, temperatureUnit, weatherData }) {
               <Typography variant="body2" color="text.secondary">
                 {locationLabel}
               </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Local time: {localTimeLabel}
+              </Typography>
             </div>
 
             <Chip label={unitLabel} color="primary" variant="outlined" />
           </Stack>
 
+          {/* Weather icon and condition */}
+          {weatherIconUrl ? (
+            <Stack direction="row" spacing={1.5} justifyContent="center" alignItems="center">
+              <Box
+                component="img"
+                src={weatherIconUrl}
+                alt={weatherIconAlt}
+                sx={{ width: 84, height: 84 }}
+              />
+
+              <Typography variant="body1" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
+                {message}
+              </Typography>
+            </Stack>
+          ) : (
+            <Typography variant="body1" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
+              {message}
+            </Typography>
+          )}
+
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
             <Chip label={`Temp: ${temperatureLabel}`} variant="filled" color="primary" />
+            <Chip label={`Feels like: ${feelsLikeLabel}`} variant="outlined" />
+          </Stack>
+
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
             <Chip label={`Humidity: ${humidityLabel}`} variant="outlined" />
             <Chip label={`Wind: ${windSpeedLabel} ${windDirectionLabel}`} variant="outlined" />
+          </Stack>
+
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+            <Chip label={`Visibility: ${visibilityLabel}`} variant="outlined" />
+            <Chip label={`Clouds: ${cloudCoverageLabel}`} variant="outlined" />
           </Stack>
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
             <Chip label={`Sunrise: ${sunriseLabel}`} variant="outlined" />
             <Chip label={`Sunset: ${sunsetLabel}`} variant="outlined" />
           </Stack>
-
-          <Typography variant="body1" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
-            {message}
-          </Typography>
         </Stack>
       </CardContent>
     </Card>
