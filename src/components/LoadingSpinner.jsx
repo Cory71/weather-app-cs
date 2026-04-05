@@ -8,10 +8,10 @@ function LoadingSpinner({ isLoading }) {
   }
 
   return (
-    <Stack spacing={1.5} alignItems="center" sx={{ py: 2 }}>
+    <Stack spacing={1.5} alignItems="center" sx={{ py: 2.5 }}>
       <CircularProgress />
       <Typography variant="body2" color="text.secondary">
-        Loading weather details...
+        Loading weather details for your selected city...
       </Typography>
     </Stack>
   )

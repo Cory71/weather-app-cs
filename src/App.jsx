@@ -1,32 +1,32 @@
 import { useEffect, useState } from 'react'
-import { Box, Container, Stack, Typography } from '@mui/material'
+import { Box, Button, Divider, Menu, MenuItem, Stack, Typography } from '@mui/material'
 import ErrorAlert from './components/ErrorAlert.jsx'
 import ForecastList from './components/ForecastList.jsx'
 import LoadingSpinner from './components/LoadingSpinner.jsx'
 import SearchBar from './components/SearchBar.jsx'
-import UnitToggle from './components/UnitToggle.jsx'
 import WeatherCard from './components/WeatherCard.jsx'
 
-const DEFAULT_CITY = 'Nanaimo,CA'
+// Main values
+const DEFAULT_CITY = 'Nanaimo, CA'
 const WEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5'
 
-// API key helper
+// Get API key
 function getOpenWeatherApiKey() {
   return import.meta.env.VITE_OPENWEATHER_API_KEY?.trim() ?? ''
 }
 
-// Request URL helper
+// Build request URL
 function buildRequestUrl(pathname, cityName, apiKey) {
   const queryString = new URLSearchParams({
     q: cityName,
     appid: apiKey,
-    units: 'metric', // Start with metric so Celsius mode is the base data.
+    units: 'metric', // Keep metric as the base data.
   }).toString()
 
   return `${WEATHER_BASE_URL}/${pathname}?${queryString}`
 }
 
-// Error message helpers
+// Error messages
 function getMissingApiKeyMessage() {
   return 'Add your OpenWeatherMap API key to a .env file as VITE_OPENWEATHER_API_KEY.'
 }
@@ -52,7 +52,7 @@ async function readErrorMessage(response) {
   }
 }
 
-// Forecast helper
+// Pick five forecast items
 function getForecastPreviewItems(forecastItems) {
   const middayItems = forecastItems.filter((forecastItem) => forecastItem.dt_txt?.includes('12:00:00'))
 
@@ -60,39 +60,68 @@ function getForecastPreviewItems(forecastItems) {
     return middayItems.slice(0, 5)
   }
 
-  return forecastItems.filter((forecastItem, index) => index % 8 === 0).slice(0, 5) // About 8 entries is one day in 3-hour data.
+  return forecastItems.filter((forecastItem, index) => index % 8 === 0).slice(0, 5) // About 8 entries is one day.
 }
 
 // Search helper text
-function getSearchHelperText(selectedCity, errorMessage, isLoading) {
+function formatHelperCityName(cityName) {
+  return cityName.replace(/,\s*/g, ', ')
+}
+
+function getSearchHelperText(searchInput, selectedCity, errorMessage, isLoading) {
+  const typedCity = searchInput.trim()
+  const formattedTypedCity = formatHelperCityName(typedCity)
+  const formattedSelectedCity = formatHelperCityName(selectedCity)
+
   if (errorMessage) {
-    return 'Add a city name, then submit the form again.'
+    return errorMessage
+  }
+
+  if (!typedCity) {
+    return 'Enter a city to display weather information.'
   }
 
   if (isLoading) {
-    return `Loading weather for ${selectedCity}...`
+    return `Loading weather for ${formattedSelectedCity}...`
   }
 
-  if (!selectedCity) {
-    return 'Try Nanaimo, Vancouver, or Toronto.'
+  if (!selectedCity || typedCity.toLowerCase() !== selectedCity.toLowerCase()) {
+    return `Press Search to update the weather for ${formattedTypedCity}.`
   }
 
-  return `Search is set for ${selectedCity}. Submit the form to load fresh weather data.`
+  return `Showing weather for ${formattedSelectedCity}. Press Search to refresh data.`
 }
 
-function App() {
-  // App state
+// Search error check
+function isSearchFieldError(errorMessage) {
+  if (!errorMessage) {
+    return false
+  }
+
+  return errorMessage.includes('Please enter a city name') || errorMessage.includes('find that city')
+}
+
+function App({ themeMode, onThemeModeChange }) {
+  // State
   const [searchInput, setSearchInput] = useState(DEFAULT_CITY)
   const [selectedCity, setSelectedCity] = useState(DEFAULT_CITY)
   const [weatherData, setWeatherData] = useState(null)
   const [forecastData, setForecastData] = useState([])
-  const [forecastEntries, setForecastEntries] = useState([]) // Keep the full list for day-based forecast details.
+  const [forecastEntries, setForecastEntries] = useState([]) // Keep the full forecast list.
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [temperatureUnit, setTemperatureUnit] = useState('celsius')
   const [searchVersion, setSearchVersion] = useState(0)
+  const [settingsAnchor, setSettingsAnchor] = useState(null)
 
-  // Search handlers
+  // Clear old results
+  function clearWeatherResults() {
+    setWeatherData(null)
+    setForecastData([])
+    setForecastEntries([])
+  }
+
+  // Update search box
   function handleSearchInputChange(event) {
     const nextValue = event.target.value
 
@@ -107,17 +136,38 @@ function App() {
     setTemperatureUnit(nextUnit)
   }
 
+  // Open settings menu
+  function handleSettingsOpen(event) {
+    setSettingsAnchor(event.currentTarget)
+  }
+
+  // Close settings menu
+  function handleSettingsClose() {
+    setSettingsAnchor(null)
+  }
+
+  // Update theme from the menu
+  function handleThemeMenuClick(nextThemeMode) {
+    onThemeModeChange(nextThemeMode)
+    handleSettingsClose()
+  }
+
+  // Update unit from the menu
+  function handleUnitMenuClick(nextUnit) {
+    handleUnitChange(nextUnit)
+    handleSettingsClose()
+  }
+
+  // Submit search
   function handleSearchSubmit(event) {
     event.preventDefault()
 
-    const cityName = searchInput.trim() // Remove spaces before validation.
+    const cityName = searchInput.trim() // Remove extra spaces.
 
     if (!cityName) {
       setIsLoading(false)
       setSelectedCity('')
-      setWeatherData(null)
-      setForecastData([])
-      setForecastEntries([])
+      clearWeatherResults()
       setErrorMessage('Please enter a city name before searching.')
       return
     }
@@ -125,13 +175,11 @@ function App() {
     setIsLoading(false)
     setErrorMessage('')
     setSelectedCity(cityName)
-    setWeatherData(null)
-    setForecastData([])
-    setForecastEntries([])
-    setSearchVersion((currentVersion) => currentVersion + 1) // Force a fresh fetch, even for the same city.
+    clearWeatherResults()
+    setSearchVersion((currentVersion) => currentVersion + 1) // Run the search again, even for the same city.
   }
 
-  // Weather fetch effect
+  // Load weather data
   useEffect(() => {
     const apiKey = getOpenWeatherApiKey()
 
@@ -141,14 +189,23 @@ function App() {
 
     if (!apiKey) {
       setIsLoading(false)
-      setWeatherData(null)
-      setForecastData([])
-      setForecastEntries([])
+      clearWeatherResults()
       setErrorMessage(getMissingApiKeyMessage())
       return undefined
     }
 
-    const abortController = new AbortController() // Cancel old requests when the city changes fast.
+    const abortController = new AbortController() // Stop old requests if the city changes.
+
+    // Get JSON from the API
+    async function fetchJson(url) {
+      const response = await fetch(url, { signal: abortController.signal })
+
+      if (!response.ok) {
+        throw new Error(await readErrorMessage(response))
+      }
+
+      return response.json()
+    }
 
     async function fetchWeatherData() {
       setIsLoading(true)
@@ -158,25 +215,12 @@ function App() {
         const weatherUrl = buildRequestUrl('weather', selectedCity, apiKey)
         const forecastUrl = buildRequestUrl('forecast', selectedCity, apiKey)
 
-        const [weatherResponse, forecastResponse] = await Promise.all([
-          fetch(weatherUrl, { signal: abortController.signal }),
-          fetch(forecastUrl, { signal: abortController.signal }),
-        ]) // Load both endpoints together to keep the UI in sync.
-
-        if (!weatherResponse.ok) {
-          throw new Error(await readErrorMessage(weatherResponse))
-        }
-
-        if (!forecastResponse.ok) {
-          throw new Error(await readErrorMessage(forecastResponse))
-        }
-
         const [weatherResponseData, forecastResponseData] = await Promise.all([
-          weatherResponse.json(),
-          forecastResponse.json(),
+          fetchJson(weatherUrl),
+          fetchJson(forecastUrl),
         ])
 
-        const allForecastEntries = forecastResponseData.list ?? [] // Fall back to an empty list if the API omits forecast items.
+        const allForecastEntries = forecastResponseData.list ?? [] // Use an empty list if forecast data is missing.
 
         setWeatherData(weatherResponseData)
         setForecastEntries(allForecastEntries)
@@ -186,9 +230,7 @@ function App() {
           return
         }
 
-        setWeatherData(null)
-        setForecastData([])
-        setForecastEntries([])
+        clearWeatherResults()
         setErrorMessage(error.message)
       } finally {
         if (!abortController.signal.aborted) {
@@ -204,36 +246,132 @@ function App() {
     }
   }, [searchVersion, selectedCity])
 
-  const searchHelperText = getSearchHelperText(selectedCity, errorMessage, isLoading)
+  const searchHelperText = getSearchHelperText(searchInput, selectedCity, errorMessage, isLoading)
+  const hasSearchFieldError = isSearchFieldError(errorMessage)
+  const currentYear = new Date().getFullYear()
+  const isSettingsOpen = Boolean(settingsAnchor)
 
-  // Main app layout
+  // Page layout
   return (
-    <Box component="main" className="app-shell">
-      <Container maxWidth="lg" sx={{ py: { xs: 5, md: 8 } }}>
-        <Stack spacing={3.5}>
-          <Box className="hero-panel">
-            <Stack spacing={3}>
-              <Stack spacing={1.5}>
-                <Typography className="app-kicker">Phase 3 API Setup And Fetch Flow</Typography>
-                <Typography variant="h1" className="app-title">
-                  SkyCast
-                </Typography>
-                <Typography className="app-copy">
-                  The app now reads an OpenWeatherMap API key from your env file
-                  and fetches current weather plus forecast data for the active city.
-                </Typography>
+    <Box component="main" className="app-shell" data-theme={themeMode}>
+      <Box sx={{ width: '100%', maxWidth: 1120, mx: 'auto', px: { xs: 2, sm: 3 }, py: { xs: 3, sm: 4, md: 6 } }}>
+        <Stack spacing={{ xs: 2.5, sm: 3.5 }}>
+          <Box
+            sx={{
+              width: '100%',
+              p: { xs: 2, sm: 3 },
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: { xs: 3, sm: 4 },
+              background: 'var(--app-hero-panel)',
+              boxShadow: 'var(--app-shadow)',
+              overflow: 'hidden',
+            }}
+          >
+            <Stack spacing={{ xs: 2.25, sm: 3 }}>
+              {/* Title area */}
+              <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="flex-start">
+                <Stack spacing={{ xs: 1.25, sm: 1.5 }} sx={{ minWidth: 0, flex: 1 }}>
+                  <Typography
+                    sx={{
+                      m: 0,
+                      fontSize: { xs: '0.82rem', sm: '0.95rem' },
+                      fontWeight: 700,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      color: 'var(--app-kicker)',
+                    }}
+                  >
+                    Local Weather Dashboard
+                  </Typography>
+                  <Typography
+                    variant="h1"
+                    sx={{
+                      m: 0,
+                      fontSize: { xs: '1.75rem', sm: 'clamp(2rem, 5vw, 3.4rem)' },
+                      lineHeight: 1.1,
+                      letterSpacing: '-0.04em',
+                      overflowWrap: 'anywhere',
+                    }}
+                  >
+                    SkyCast
+                  </Typography>
+                </Stack>
+
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={handleSettingsOpen}
+                  aria-label="Open settings menu"
+                  aria-controls={isSettingsOpen ? 'weather-settings-menu' : undefined}
+                  aria-expanded={isSettingsOpen ? 'true' : undefined}
+                  aria-haspopup="true"
+                  sx={{
+                    minWidth: 44,
+                    width: 44,
+                    height: 44,
+                    px: 0,
+                    py: 0,
+                    alignSelf: 'flex-start',
+                    borderWidth: 1.5,
+                    color: 'text.primary',
+                    fontSize: '1.35rem',
+                    fontWeight: 700,
+                    lineHeight: 1,
+                  }}
+                >
+                  <span aria-hidden="true">⚙</span>
+                </Button>
               </Stack>
 
-              <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} justifyContent="space-between">
-                <SearchBar
-                  searchInput={searchInput}
-                  helperText={searchHelperText}
-                  isLoading={isLoading}
-                  onSearchInputChange={handleSearchInputChange}
-                  onSearchSubmit={handleSearchSubmit}
-                />
+              <Menu
+                id="weather-settings-menu"
+                anchorEl={settingsAnchor}
+                open={isSettingsOpen}
+                onClose={handleSettingsClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      width: 190,
+                    },
+                  },
+                }}
+              >
+                <MenuItem disabled dense>
+                  Theme mode
+                </MenuItem>
+                <MenuItem dense selected={themeMode === 'light'} onClick={() => handleThemeMenuClick('light')}>
+                  Light
+                </MenuItem>
+                <MenuItem dense selected={themeMode === 'dark'} onClick={() => handleThemeMenuClick('dark')}>
+                  Dark
+                </MenuItem>
+                <Divider />
+                <MenuItem disabled dense>
+                  Temperature unit
+                </MenuItem>
+                <MenuItem dense selected={temperatureUnit === 'celsius'} onClick={() => handleUnitMenuClick('celsius')}>
+                  Celsius
+                </MenuItem>
+                <MenuItem dense selected={temperatureUnit === 'fahrenheit'} onClick={() => handleUnitMenuClick('fahrenheit')}>
+                  Fahrenheit
+                </MenuItem>
+              </Menu>
 
-                <UnitToggle temperatureUnit={temperatureUnit} onUnitChange={handleUnitChange} />
+              {/* Search area */}
+              <Stack direction={{ xs: 'column', lg: 'row' }} spacing={{ xs: 2, sm: 2.5, lg: 2 }} alignItems={{ xs: 'stretch', lg: 'flex-start' }}>
+                <Box sx={{ flex: 1, minWidth: 0 }}> {/* Let the search box fit on small screens. */}
+                  <SearchBar
+                    searchInput={searchInput}
+                    helperText={searchHelperText}
+                    hasError={hasSearchFieldError}
+                    isLoading={isLoading}
+                    onSearchInputChange={handleSearchInputChange}
+                    onSearchSubmit={handleSearchSubmit}
+                  />
+                </Box>
               </Stack>
             </Stack>
           </Box>
@@ -241,7 +379,18 @@ function App() {
           <ErrorAlert message={errorMessage} />
           <LoadingSpinner isLoading={isLoading} />
 
-          <Box className="content-grid">
+          {/* Weather panels */}
+          <Box
+            sx={{
+              display: 'grid',
+              gap: { xs: 1.75, sm: 2 },
+              alignItems: 'start',
+              gridTemplateColumns: { xs: '1fr', lg: 'minmax(0, 1fr) minmax(0, 1fr)' },
+              '& > *': {
+                minWidth: 0,
+              },
+            }}
+          >
             <WeatherCard
               selectedCity={selectedCity}
               temperatureUnit={temperatureUnit}
@@ -255,8 +404,22 @@ function App() {
               temperatureUnit={temperatureUnit}
             />
           </Box>
+
+          {/* Footer */}
+          <Stack spacing={0.5} alignItems="center" sx={{ pt: 1, textAlign: 'center' }}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 700,
+                letterSpacing: '0.04em',
+                color: 'text.secondary',
+              }}
+            >
+              SkyCast • {currentYear}
+            </Typography>
+          </Stack>
         </Stack>
-      </Container>
+      </Box>
     </Box>
   )
 }

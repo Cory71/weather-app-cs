@@ -194,20 +194,20 @@ Polish the app so it looks clean, responds well on different screens, and handle
 
 ### Phase 5 Checklist
 
-- [ ] Use Material UI spacing and layout props for most styling.
-- [ ] Keep spacing, typography, and colors consistent.
-- [ ] Add a light and dark mode toggle.
-- [ ] Update the Material UI theme so both modes look intentional and readable.
-- [ ] Make the layout work on mobile, tablet, and desktop.
-- [ ] Use `sx` for small one-off styling changes.
-- [ ] Keep custom styling minimal and readable.
-- [ ] Handle empty search input.
-- [ ] Handle invalid city names.
-- [ ] Handle failed API requests.
-- [ ] Handle slow-loading states.
-- [ ] Show clear error messages with MUI `Alert`.
-- [ ] Show loading state with MUI `CircularProgress`.
-- [ ] Prevent broken UI when data is missing.
+- [x] Use Material UI spacing and layout props for most styling.
+- [x] Keep spacing, typography, and colors consistent.
+- [x] Add a light and dark mode toggle.
+- [x] Update the Material UI theme so both modes look intentional and readable.
+- [x] Make the layout work on mobile, tablet, and desktop.
+- [x] Use `sx` for small one-off styling changes.
+- [x] Keep custom styling minimal and readable.
+- [x] Handle empty search input.
+- [x] Handle invalid city names.
+- [x] Handle failed API requests.
+- [x] Handle slow-loading states.
+- [x] Show clear error messages with MUI `Alert`.
+- [x] Show loading state with MUI `CircularProgress`.
+- [x] Prevent broken UI when data is missing.
 
 ### Phase 5 Deliverable
 
@@ -215,9 +215,9 @@ A polished and reliable app that feels ready for review.
 
 ### Phase 5 Commit Point
 
-- [ ] The app looks clean on common screen sizes.
-- [ ] Loading and error states work clearly.
-- [ ] The UI stays stable when data is missing or requests fail.
+- [x] The app looks clean on common screen sizes.
+- [x] Loading and error states work clearly.
+- [x] The UI stays stable when data is missing or requests fail.
 - [ ] Commit and push Phase 5.
 
 ## Phase 6: Final Cleanup, README, Publish, And Submit

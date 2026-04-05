@@ -1,15 +1,8 @@
 /* Global theme values */
 :root {
-  --app-background: linear-gradient(180deg, #dff4ff 0%, #f6fbff 38%, #fff7ed 100%);
-  --app-text: #17324a;
-  --app-panel: rgba(255, 255, 255, 0.88);
-  --app-panel-border: rgba(23, 50, 74, 0.12);
-  --app-shadow: 0 24px 60px rgba(23, 50, 74, 0.12);
   font-family: 'Aptos', 'Trebuchet MS', 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: var(--app-text);
-  background: var(--app-background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -25,7 +18,7 @@
 body {
   margin: 0;
   min-width: 320px;
-  background: var(--app-background);
+  background: #f6fbff;
 }
 
 /* Form font reset */
@@ -43,8 +36,33 @@ select {
 
 /* App shell layout */
 .app-shell {
+  --app-background: linear-gradient(180deg, #dff4ff 0%, #f6fbff 38%, #fff7ed 100%);
+  --app-text: #17324a;
+  --app-hero-panel: #ecf1f4;
+  --app-panel-border: rgba(23, 50, 74, 0.12);
+  --app-shadow: 0 24px 60px rgba(23, 50, 74, 0.12);
+  --app-kicker: #236f95;
+  --app-copy: #486276;
+  --app-glow-top: rgba(100, 197, 255, 0.24);
+  --app-glow-bottom: rgba(255, 180, 77, 0.18);
   min-height: 100vh;
   position: relative;
+  color: var(--app-text);
+  background: var(--app-background);
+  transition: background 200ms ease, color 200ms ease;
+}
+
+/* Dark mode values */
+.app-shell[data-theme='dark'] {
+  --app-background: linear-gradient(180deg, #0e1a22 0%, #132632 42%, #1c2733 100%);
+  --app-text: #e6f2fb;
+  --app-hero-panel: rgba(22, 36, 48, 0.86);
+  --app-panel-border: rgba(167, 214, 247, 0.18);
+  --app-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  --app-kicker: #8dd1ff;
+  --app-copy: #c6d9e7;
+  --app-glow-top: rgba(52, 134, 189, 0.18);
+  --app-glow-bottom: rgba(234, 152, 57, 0.14);
 }
 
 /* Background glow shapes */
@@ -64,7 +82,7 @@ select {
   left: 28px;
   width: 220px;
   height: 220px;
-  background: rgba(100, 197, 255, 0.24);
+  background: var(--app-glow-top);
 }
 
 /* Bottom glow shape */
@@ -73,55 +91,6 @@ select {
   bottom: 40px;
   width: 260px;
   height: 260px;
-  background: rgba(255, 180, 77, 0.18);
+  background: var(--app-glow-bottom);
 }
 
-/* Hero panel */
-.hero-panel {
-  padding: clamp(24px, 5vw, 40px);
-  border: 1px solid var(--app-panel-border);
-  border-radius: 28px;
-  background: var(--app-panel);
-  box-shadow: var(--app-shadow);
-  backdrop-filter: blur(10px);
-}
-
-/* Small heading text */
-.app-kicker {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #236f95;
-}
-
-/* Main app title */
-.app-title {
-  margin: 0;
-  font-size: clamp(2rem, 5vw, 3.4rem);
-  line-height: 1.1;
-  letter-spacing: -0.04em;
-}
-
-/* Intro text */
-.app-copy {
-  margin: 0;
-  font-size: 1.05rem;
-  max-width: 56ch;
-  color: #486276;
-}
-
-/* Main content grid */
-.content-grid {
-  display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-/* Small screen layout */
-@media (max-width: 640px) {
-  .content-grid {
-    grid-template-columns: 1fr;
-  }
-}

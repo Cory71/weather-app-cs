@@ -1,4 +1,5 @@
 import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
 
 // Error alert component
 function ErrorAlert({ message }) {
@@ -7,7 +8,12 @@ function ErrorAlert({ message }) {
     return null
   }
 
-  return <Alert severity="warning">{message}</Alert>
+  return (
+    <Alert severity="error" variant="filled">
+      <AlertTitle>Weather request issue</AlertTitle>
+      {message}
+    </Alert>
+  )
 }
 
 export default ErrorAlert

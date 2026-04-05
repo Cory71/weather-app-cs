@@ -29,7 +29,7 @@ function formatForecastDate(dateText) {
   })
 }
 
-// Precipitation helpers
+// Rain chance helper
 function formatPrecipitationChance(popValue) {
   if (popValue == null) {
     return '--'
@@ -38,13 +38,13 @@ function formatPrecipitationChance(popValue) {
   return `${Math.round(popValue * 100)}%`
 }
 
-// Precipitation amount helper
+// Rain or snow amount
 function formatRainOrSnowAmount(forecastItem, temperatureUnit) {
   const rainVolume = forecastItem.rain?.['3h']
   const snowVolume = forecastItem.snow?.['3h']
 
   if (rainVolume == null && snowVolume == null) {
-    return '' // Hide this line when the API has no rain or snow amount.
+    return '' // Do not show this line if there is no amount.
   }
 
   const precipitationVolume = rainVolume ?? snowVolume
@@ -67,7 +67,7 @@ function getCityDateKey(unixTime) {
   return new Date(unixTime * 1000).toISOString().slice(0, 10)
 }
 
-// Daily range helper
+// High and low helper
 function getDailyHighLowLabel(forecastItem, forecastEntries, temperatureUnit) {
   const cityDateKey = getCityDateKey(forecastItem.dt)
   const sameDayForecastEntries = forecastEntries.filter((entry) => getCityDateKey(entry.dt) === cityDateKey)
@@ -94,7 +94,7 @@ function getDailyHighLowLabel(forecastItem, forecastEntries, temperatureUnit) {
   return `H ${formatTemperature(highTemperature, temperatureUnit)} / L ${formatTemperature(lowTemperature, temperatureUnit)}`
 }
 
-// Icon helper
+// Forecast icon helper
 function getWeatherIconUrl(iconCode) {
   if (!iconCode) {
     return ''
@@ -103,30 +103,29 @@ function getWeatherIconUrl(iconCode) {
   return `https://openweathermap.org/img/wn/${iconCode}.png`
 }
 
-// Forecast text helper
-function getForecastMessage(selectedCity, forecastData) {
-  if (!selectedCity) {
-    return 'Your five-day forecast will show here after you search for a city.'
-  }
-
-  if (!forecastData.length) {
-    return 'Forecast data will appear here after the request finishes.'
-  }
-
-  return 'Five forecast points are loaded for the current city.'
+// Check for forecast rows
+function hasForecastItems(forecastData) {
+  return forecastData.length > 0
 }
 
 function ForecastList({ forecastData, forecastEntries, selectedCity, temperatureUnit }) {
-  // Forecast display values
-  const message = getForecastMessage(selectedCity, forecastData)
-
-  // Forecast panel
+  // Forecast card
   return (
-    <Card elevation={0} sx={{ borderRadius: 4, border: '1px solid', borderColor: 'divider' }}>
-      <CardContent sx={{ p: 3 }}>
-        <Stack spacing={1.5}>
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            Forecast Preview
+    <Card
+      elevation={0}
+      sx={{
+        minWidth: 0,
+        borderRadius: { xs: 3, sm: 4 },
+        border: '1px solid',
+        borderColor: 'divider',
+        backgroundColor: 'background.paper',
+      }}
+    >
+      <CardContent sx={{ p: { xs: 2, sm: 2.75, lg: 2.5 } }}>
+        <Stack spacing={{ xs: 1.5, lg: 1.2 }}>
+          {/* Title text */}
+          <Typography variant="h5" sx={{ fontWeight: 700, fontSize: { xs: '1.6rem', lg: '1.85rem' } }}>
+            Forecast
           </Typography>
 
           <Typography variant="body2" color="text.secondary">
@@ -134,75 +133,112 @@ function ForecastList({ forecastData, forecastEntries, selectedCity, temperature
           </Typography>
 
           <Typography variant="body1" color="text.secondary">
-            {message}
+            Five-day forecast
           </Typography>
 
-          {forecastData.map((forecastItem) => (
-            <ForecastRow
-              key={forecastItem.dt}
-              forecastItem={forecastItem}
-              forecastEntries={forecastEntries}
-              temperatureUnit={temperatureUnit}
-            />
-          ))}
+          {/* Forecast items */}
+          {hasForecastItems(forecastData)
+            ? forecastData.map((forecastItem) => (
+                <ForecastRow
+                  key={forecastItem.dt}
+                  forecastItem={forecastItem}
+                  forecastEntries={forecastEntries}
+                  temperatureUnit={temperatureUnit}
+                />
+              ))
+            : null}
         </Stack>
       </CardContent>
     </Card>
   )
 }
 
-// Forecast row component
+// One forecast row
 function ForecastRow({ forecastItem, forecastEntries, temperatureUnit }) {
   const precipitationAmountLabel = formatRainOrSnowAmount(forecastItem, temperatureUnit)
 
   return (
-    <Stack
-      direction={{ xs: 'column', sm: 'row' }}
-      spacing={1}
-      justifyContent="space-between"
-      alignItems={{ xs: 'flex-start', sm: 'center' }}
-      sx={{ py: 1, borderTop: '1px solid', borderColor: 'divider' }}
+    <Box
+      sx={{
+        px: { xs: 2, sm: 2.5 },
+        py: { xs: 1.25, sm: 1.35, lg: 1.1 },
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: { xs: 2.5, sm: 3 },
+        backgroundColor: 'action.hover',
+      }}
     >
-      {/* Forecast date and extras */}
-      <Stack spacing={0.25}>
-        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-          {formatForecastDate(forecastItem.dt_txt)}
-        </Typography>
-
-        <Typography variant="body2" color="text.secondary">
-          Precipitation chance: {formatPrecipitationChance(forecastItem.pop)}
-        </Typography>
-
-        <Typography variant="body2" color="text.secondary">
-          {getDailyHighLowLabel(forecastItem, forecastEntries, temperatureUnit)}
-        </Typography>
-
-        {precipitationAmountLabel ? (
-          <Typography variant="body2" color="text.secondary">
-            {precipitationAmountLabel}
+      {/* Forecast row content */}
+      <Box
+        sx={{
+          display: 'grid',
+          gap: { xs: 0.9, sm: 1, lg: 0.8 },
+          gridTemplateColumns: { xs: '1fr', xl: 'minmax(0, 1fr) minmax(0, 1fr) auto' },
+          alignItems: 'center',
+          minWidth: 0, // Let the row shrink on smaller screens.
+        }}
+      >
+        <Stack spacing={0.3}>
+          <Typography variant="body2" sx={{ fontWeight: 700 }}>
+            {formatForecastDate(forecastItem.dt_txt)}
           </Typography>
-        ) : null}
-      </Stack>
 
-      <Stack direction="row" spacing={1} alignItems="center">
-        {forecastItem.weather?.[0]?.icon ? (
-          <Box
-            component="img"
-            src={getWeatherIconUrl(forecastItem.weather[0].icon)}
-            alt={forecastItem.weather?.[0]?.description || 'Forecast icon'}
-            sx={{ width: 36, height: 36 }}
-          />
-        ) : null}
+          <Typography variant="body2" color="text.secondary">
+            Precipitation chance: {formatPrecipitationChance(forecastItem.pop)}
+          </Typography>
 
-        <Typography variant="body2" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
-          {forecastItem.weather?.[0]?.description || 'Forecast pending'}
+          {precipitationAmountLabel ? (
+            <Typography variant="body2" color="text.secondary">
+              {precipitationAmountLabel}
+            </Typography>
+          ) : null}
+        </Stack>
+
+        <Stack direction="row" spacing={{ xs: 0.75, sm: 1 }} alignItems="center" sx={{ minWidth: 0 }}>
+          {forecastItem.weather?.[0]?.icon ? (
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: { xs: 32, sm: 36, lg: 34 },
+                height: { xs: 32, sm: 36, lg: 34 },
+                borderRadius: '50%',
+                background: 'linear-gradient(180deg, rgba(30, 136, 200, 0.18) 0%, rgba(245, 250, 255, 0.98) 100%)',
+                border: '1px solid',
+                borderColor: 'rgba(30, 136, 200, 0.18)',
+                boxShadow: '0 4px 10px rgba(23, 50, 74, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.82)', // Helps the icon stand out.
+                flexShrink: 0,
+              }}
+            >
+              <Box
+                component="img"
+                src={getWeatherIconUrl(forecastItem.weather[0].icon)}
+                alt={forecastItem.weather?.[0]?.description || 'Forecast icon'}
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  filter: 'drop-shadow(0 1px 2px rgba(23, 50, 74, 0.3)) contrast(1.05)',
+                }}
+              />
+            </Box>
+          ) : null}
+
+          <Stack spacing={0.3} sx={{ minWidth: 0 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ textTransform: 'capitalize', overflowWrap: 'anywhere' }}>
+              {forecastItem.weather?.[0]?.description || 'Forecast pending'}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {getDailyHighLowLabel(forecastItem, forecastEntries, temperatureUnit)}
+            </Typography>
+          </Stack>
+        </Stack>
+
+        <Typography variant="body1" sx={{ fontWeight: 700, fontSize: { xs: '1rem', sm: '1.05rem', lg: '1rem' } }}>
+          {forecastItem.main ? formatTemperature(forecastItem.main.temp, temperatureUnit) : '--'}
         </Typography>
-      </Stack>
-
-      <Typography variant="body2" color="text.secondary">
-        {forecastItem.main ? formatTemperature(forecastItem.main.temp, temperatureUnit) : '--'}
-      </Typography>
-    </Stack>
+      </Box>
+    </Box>
   )
 }
 
