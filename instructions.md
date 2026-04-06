@@ -16,11 +16,11 @@
 - [x] Ensure responsiveness to different screen sizes. Implement smooth transitions or animations to enhance the user experience.
 - [x] Allow users to input location information to fetch weather data dynamically. Implement additional features such as a toggle between Celsius and Fahrenheit, a five-day forecast, or any other creative functionality.
 - [x] Implement proper error handling for scenarios like invalid input, failed API requests, or other potential issues. Provide clear and user-friendly error messages.
-- [ ] Create a README file that includes instructions on how to set up and run the project. Document any external libraries or frameworks used, along with a brief explanation of your code's organization.
+- [x] Create a README file that includes instructions on how to set up and run the project. Document any external libraries or frameworks used, along with a brief explanation of your code's organization.
 
 ## Submission
 
 - [ ] A link to a GitHub repository containing the complete project.
-- [ ] Include a README file.
+- [x] Include a README file.
 - [ ] A link to the published website.
-- [ ] Provide any additional notes or explanations that can help in the evaluation process.
+- [x] Provide any additional notes or explanations that can help in the evaluation process.

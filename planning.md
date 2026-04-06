@@ -218,7 +218,7 @@ A polished and reliable app that feels ready for review.
 - [x] The app looks clean on common screen sizes.
 - [x] Loading and error states work clearly.
 - [x] The UI stays stable when data is missing or requests fail.
-- [ ] Commit and push Phase 5.
+- [x] Commit and push Phase 5.
 
 ## Phase 6: Final Cleanup, README, Publish, And Submit
 
@@ -228,31 +228,31 @@ Prepare the project for grading, deployment, and submission.
 
 ### Phase 6 Checklist
 
-- [ ] Review component names and file names.
-- [ ] Remove unused code and files.
-- [ ] Add simple comments only where needed.
-- [ ] Write the README with setup and run steps.
-- [ ] Document the tools and libraries used.
-- [ ] Explain the project structure in simple terms.
-- [ ] Mention Material UI and OpenWeatherMap in the README.
-- [ ] Include project purpose.
-- [ ] Include setup instructions.
-- [ ] Include environment variable instructions.
-- [ ] Include the run command.
-- [ ] Include the build command.
-- [ ] Run `npm run build` successfully before the final commit.
+- [x] Review component names and file names.
+- [x] Remove unused code and files.
+- [x] Add simple comments where needed.
+- [x] Write the README with setup and run steps.
+- [x] Document the tools and libraries used.
+- [x] Explain the project structure in simple terms.
+- [x] Mention Material UI and OpenWeatherMap in the README.
+- [x] Include project purpose.
+- [x] Include setup instructions.
+- [x] Include environment variable instructions.
+- [x] Include the run command.
+- [x] Include the build command.
+- [x] Run `npm run build` successfully before the final commit.
 - [ ] Include deployment link after publishing.
 - [ ] Push the complete project to GitHub.
 - [ ] Publish the website.
 - [ ] Test the live site.
-- [ ] Confirm the README is complete.
-- [ ] Gather any extra notes for the instructor.
+- [x] Confirm the README is complete.
+- [x] Gather any extra notes for the instructor.
 - [ ] Submit the GitHub link and published site link.
 
 ### Phase 6 Commit Point
 
-- [ ] The repo is clean and documented.
-- [ ] `npm run build` completes without errors.
+- [x] The repo is clean and documented.
+- [x] `npm run build` completes without errors.
 - [ ] The live site works.
 - [ ] Submission links are ready.
 - [ ] Commit and push Phase 6.
@@ -267,8 +267,6 @@ A submitted project that includes the repo, README, live site, and any helpful n
 - `SearchBar.jsx` handles the controlled input and submit action.
 - `WeatherCard.jsx` shows the current weather data.
 - `ForecastList.jsx` maps forecast items into visible UI.
-- `ForecastCard.jsx` renders one forecast item.
-- `UnitToggle.jsx` switches between Celsius and Fahrenheit.
 - `ErrorAlert.jsx` renders API and validation errors.
 - `LoadingSpinner.jsx` renders the loading state.
 
@@ -290,16 +288,16 @@ A submitted project that includes the repo, README, live site, and any helpful n
 
 ## Definition Of Done
 
-- [ ] The app runs locally without errors.
-- [ ] The app fetches weather data from OpenWeatherMap.
-- [ ] The user can search by location.
-- [ ] The app shows current weather details.
-- [ ] The app shows a five-day forecast or similar forecast view.
-- [ ] The app includes a Celsius and Fahrenheit toggle or another extra feature.
-- [ ] The app uses Material UI for the main visual components.
-- [ ] The app uses `useEffect` for API requests.
-- [ ] The UI is responsive.
-- [ ] Errors are handled clearly.
-- [ ] The README explains setup and usage.
-- [ ] The project is on GitHub.
+- [x] The app runs locally without errors.
+- [x] The app fetches weather data from OpenWeatherMap.
+- [x] The user can search by location.
+- [x] The app shows current weather details.
+- [x] The app shows a five-day forecast or similar forecast view.
+- [x] The app includes a Celsius and Fahrenheit toggle or another extra feature.
+- [x] The app uses Material UI for the main visual components.
+- [x] The app uses `useEffect` for API requests.
+- [x] The UI is responsive.
+- [x] Errors are handled clearly.
+- [x] The README explains setup and usage.
+- [x] The project is on GitHub.
 - [ ] The project is deployed.

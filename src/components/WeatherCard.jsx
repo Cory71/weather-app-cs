@@ -119,6 +119,17 @@ function getWeatherMessage(selectedCity, weatherData) {
   return weatherData.weather?.[0]?.description || 'Weather details are ready.'
 }
 
+function getCurrentHighLowLabel(weatherData, temperatureUnit) {
+  if (weatherData?.main?.temp_max == null || weatherData?.main?.temp_min == null) {
+    return '--'
+  }
+
+  const highTemperatureLabel = formatTemperature(weatherData.main.temp_max, temperatureUnit)
+  const lowTemperatureLabel = formatTemperature(weatherData.main.temp_min, temperatureUnit)
+
+  return `H ${highTemperatureLabel} / L ${lowTemperatureLabel}`
+}
+
 // Build detail tiles
 function getDetailItems(weatherData, temperatureUnit) {
   const windSpeedLabel = weatherData?.wind?.speed != null ? formatWindSpeed(weatherData.wind.speed, temperatureUnit) : '--'
@@ -169,6 +180,7 @@ function WeatherCard({ selectedCity, temperatureUnit, weatherData }) {
   const message = getWeatherMessage(selectedCity, weatherData)
   const temperatureLabel = weatherData?.main ? formatTemperature(weatherData.main.temp, temperatureUnit) : '--'
   const feelsLikeLabel = weatherData?.main ? formatTemperature(weatherData.main.feels_like, temperatureUnit) : '--'
+  const highLowLabel = getCurrentHighLowLabel(weatherData, temperatureUnit)
   const localTimeLabel = formatCityDateTime(weatherData?.dt, weatherData?.timezone)
   const weatherIconUrl = getWeatherIconUrl(weatherData?.weather?.[0]?.icon)
   const weatherIconAlt = weatherData?.weather?.[0]?.description || 'Weather icon'
@@ -227,6 +239,9 @@ function WeatherCard({ selectedCity, temperatureUnit, weatherData }) {
               </Typography>
               <Typography variant="body1" color="text.secondary">
                 Feels like: {feelsLikeLabel}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {highLowLabel}
               </Typography>
             </Stack>
 

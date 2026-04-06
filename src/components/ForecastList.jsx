@@ -173,7 +173,7 @@ function ForecastRow({ forecastItem, forecastEntries, temperatureUnit }) {
         sx={{
           display: 'grid',
           gap: { xs: 0.9, sm: 1, lg: 0.8 },
-          gridTemplateColumns: { xs: '1fr', xl: 'minmax(0, 1fr) minmax(0, 1fr) auto' },
+          gridTemplateColumns: { xs: '1fr', sm: 'minmax(0, 1fr) minmax(0, 1fr) auto' },
           alignItems: 'center',
           minWidth: 0, // Let the row shrink on smaller screens.
         }}
@@ -194,7 +194,16 @@ function ForecastRow({ forecastItem, forecastEntries, temperatureUnit }) {
           ) : null}
         </Stack>
 
-        <Stack direction="row" spacing={{ xs: 0.75, sm: 1 }} alignItems="center" sx={{ minWidth: 0 }}>
+        <Stack spacing={0.3} sx={{ minWidth: 0 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ textTransform: 'capitalize', overflowWrap: 'anywhere' }}>
+            {forecastItem.weather?.[0]?.description || 'Forecast pending'}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {getDailyHighLowLabel(forecastItem, forecastEntries, temperatureUnit)}
+          </Typography>
+        </Stack>
+
+        <Box sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' } }}>
           {forecastItem.weather?.[0]?.icon ? (
             <Box
               sx={{
@@ -223,20 +232,7 @@ function ForecastRow({ forecastItem, forecastEntries, temperatureUnit }) {
               />
             </Box>
           ) : null}
-
-          <Stack spacing={0.3} sx={{ minWidth: 0 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ textTransform: 'capitalize', overflowWrap: 'anywhere' }}>
-              {forecastItem.weather?.[0]?.description || 'Forecast pending'}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {getDailyHighLowLabel(forecastItem, forecastEntries, temperatureUnit)}
-            </Typography>
-          </Stack>
-        </Stack>
-
-        <Typography variant="body1" sx={{ fontWeight: 700, fontSize: { xs: '1rem', sm: '1.05rem', lg: '1rem' } }}>
-          {forecastItem.main ? formatTemperature(forecastItem.main.temp, temperatureUnit) : '--'}
-        </Typography>
+        </Box>
       </Box>
     </Box>
   )
