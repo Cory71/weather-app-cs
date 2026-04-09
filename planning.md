@@ -241,21 +241,21 @@ Prepare the project for grading, deployment, and submission.
 - [x] Include the run command.
 - [x] Include the build command.
 - [x] Run `npm run build` successfully before the final commit.
-- [ ] Include deployment link after publishing.
-- [ ] Push the complete project to GitHub.
-- [ ] Publish the website.
-- [ ] Test the live site.
+- [x] Include deployment link after publishing.
+- [x] Push the complete project to GitHub.
+- [x] Publish the website.
+- [x] Test the live site.
 - [x] Confirm the README is complete.
 - [x] Gather any extra notes for the instructor.
-- [ ] Submit the GitHub link and published site link.
+- [x] Submit the GitHub link and published site link.
 
 ### Phase 6 Commit Point
 
 - [x] The repo is clean and documented.
 - [x] `npm run build` completes without errors.
-- [ ] The live site works.
-- [ ] Submission links are ready.
-- [ ] Commit and push Phase 6.
+- [x] The live site works.
+- [x] Submission links are ready.
+- [x] Commit and push Phase 6.
 
 ### Phase 6 Deliverable
 
@@ -300,4 +300,4 @@ A submitted project that includes the repo, README, live site, and any helpful n
 - [x] Errors are handled clearly.
 - [x] The README explains setup and usage.
 - [x] The project is on GitHub.
-- [ ] The project is deployed.
+- [x] The project is deployed.

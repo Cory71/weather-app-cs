@@ -20,7 +20,7 @@
 
 ## Submission
 
-- [ ] A link to a GitHub repository containing the complete project.
+- [x] A link to a GitHub repository containing the complete project.
 - [x] Include a README file.
-- [ ] A link to the published website.
+- [x] A link to the published website.
 - [x] Provide any additional notes or explanations that can help in the evaluation process.
