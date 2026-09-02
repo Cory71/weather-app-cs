@@ -21,6 +21,11 @@ body {
   background: #f6fbff;
 }
 
+/* Dark page base, applied before React loads to avoid a light flash */
+html[data-theme='dark'] body {
+  background: #0d1720;
+}
+
 /* Form font reset */
 button,
 input,

@@ -101,7 +101,7 @@ function isSearchFieldError(errorMessage) {
   return errorMessage.includes('Please enter a city name') || errorMessage.includes('find that city')
 }
 
-function App({ themeMode, onThemeModeChange }) {
+function App({ themeMode, themePreference, onThemePreferenceChange }) {
   // State
   const [searchInput, setSearchInput] = useState(DEFAULT_CITY)
   const [selectedCity, setSelectedCity] = useState(DEFAULT_CITY)
@@ -147,8 +147,8 @@ function App({ themeMode, onThemeModeChange }) {
   }
 
   // Update theme from the menu
-  function handleThemeMenuClick(nextThemeMode) {
-    onThemeModeChange(nextThemeMode)
+  function handleThemeMenuClick(nextThemePreference) {
+    onThemePreferenceChange(nextThemePreference)
     handleSettingsClose()
   }
 
@@ -342,10 +342,13 @@ function App({ themeMode, onThemeModeChange }) {
                 <MenuItem disabled dense>
                   Theme mode
                 </MenuItem>
-                <MenuItem dense selected={themeMode === 'light'} onClick={() => handleThemeMenuClick('light')}>
+                <MenuItem dense selected={themePreference === 'system'} onClick={() => handleThemeMenuClick('system')}>
+                  System
+                </MenuItem>
+                <MenuItem dense selected={themePreference === 'light'} onClick={() => handleThemeMenuClick('light')}>
                   Light
                 </MenuItem>
-                <MenuItem dense selected={themeMode === 'dark'} onClick={() => handleThemeMenuClick('dark')}>
+                <MenuItem dense selected={themePreference === 'dark'} onClick={() => handleThemeMenuClick('dark')}>
                   Dark
                 </MenuItem>
                 <Divider />

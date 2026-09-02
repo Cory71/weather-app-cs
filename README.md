@@ -10,7 +10,7 @@ SkyCast is a React weather app that lets the user search for a city and view cur
 - View current weather details
 - View a five-day forecast
 - Switch between Celsius and Fahrenheit
-- Switch between light and dark mode
+- Follow the device light or dark setting, or pick light or dark manually
 - See clear loading and error states
 - Use a responsive layout for mobile, tablet, and desktop
 
