@@ -7,6 +7,9 @@ SkyCast is a React weather app that lets the user search for a city and view cur
 ## Features
 
 - Search for weather by city name
+- Detect the current location with one button press
+- Save favorite cities and switch between them from the settings menu
+- Optionally detect the location automatically on startup
 - View current weather details
 - View a five-day forecast
 - Switch between Celsius and Fahrenheit
@@ -20,14 +23,21 @@ SkyCast is a React weather app that lets the user search for a city and view cur
 - Vite: runs the development server and creates the production build
 - Material UI: provides UI components and theme support
 - Emotion: supports Material UI styling
-- OpenWeatherMap API: provides current weather and forecast data
+- OpenWeatherMap API: provides current weather, forecast, and place name lookup
+- Browser Geolocation API: finds the current location when the user asks for it
 
 ## Project Structure
 
 - `src/App.jsx`: main layout, search state, API fetching, and settings menu
-- `src/main.jsx`: app entry point and Material UI theme setup
+- `src/main.jsx`: app entry point
+- `src/RootApp.jsx`: Material UI theme setup and light or dark mode state
 - `src/index.css`: global styles and app background styling
+- `src/deviceLocation.js`: reads the device location from the browser
+- `src/favoriteCities.js`: rules for the saved favorite city list
+- `src/appStorage.js`: saves settings in the browser
 - `src/components/SearchBar.jsx`: search input and search button
+- `src/components/LocationButton.jsx`: button that detects the current location
+- `src/components/FavoriteButton.jsx`: star button that saves the current city
 - `src/components/WeatherCard.jsx`: current weather display
 - `src/components/ForecastList.jsx`: five-day forecast display
 - `src/components/ErrorAlert.jsx`: error message display

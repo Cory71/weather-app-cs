@@ -1,14 +1,31 @@
 import { useEffect, useState } from 'react'
-import { Box, Button, Divider, Menu, MenuItem, Stack, Typography } from '@mui/material'
+import { Box, Button, Divider, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material'
 import ErrorAlert from './components/ErrorAlert.jsx'
+import FavoriteButton from './components/FavoriteButton.jsx'
 import ForecastList from './components/ForecastList.jsx'
 import LoadingSpinner from './components/LoadingSpinner.jsx'
+import LocationButton from './components/LocationButton.jsx'
 import SearchBar from './components/SearchBar.jsx'
 import WeatherCard from './components/WeatherCard.jsx'
+import requestDeviceLocation from './deviceLocation.js'
+import { readStoredJson, saveStoredJson } from './appStorage.js'
+import {
+  addFavoriteCity,
+  cleanFavoriteCities,
+  isFavoriteCity,
+  removeFavoriteCity,
+} from './favoriteCities.js'
 
 // Main values
 const DEFAULT_CITY = 'Nanaimo, CA'
 const WEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5'
+const GEOCODE_BASE_URL = 'https://api.openweathermap.org/geo/1.0'
+const FAVORITES_STORAGE_KEY = 'skycast-favorites'
+const AUTO_LOCATION_STORAGE_KEY = 'skycast-auto-location'
+
+// Read the startup setting once so the first render knows where to look.
+const startupUsesLocation = readStoredJson(AUTO_LOCATION_STORAGE_KEY, false) === true
+const startupCity = startupUsesLocation ? '' : DEFAULT_CITY
 
 // Get API key
 function getOpenWeatherApiKey() {
@@ -24,6 +41,31 @@ function buildRequestUrl(pathname, cityName, apiKey) {
   }).toString()
 
   return `${WEATHER_BASE_URL}/${pathname}?${queryString}`
+}
+
+// Build the URL that turns coordinates back into a place name
+function buildReverseGeocodeUrl(latitude, longitude, apiKey) {
+  const queryString = new URLSearchParams({
+    lat: latitude,
+    lon: longitude,
+    limit: 1, // Only need the closest place.
+    appid: apiKey,
+  }).toString()
+
+  return `${GEOCODE_BASE_URL}/reverse?${queryString}`
+}
+
+// Turn a geocoding result into a city name the search box can use
+function formatDetectedCity(place) {
+  if (!place?.name) {
+    return ''
+  }
+
+  if (!place.country) {
+    return place.name
+  }
+
+  return `${place.name}, ${place.country}`
 }
 
 // Error messages
@@ -103,8 +145,8 @@ function isSearchFieldError(errorMessage) {
 
 function App({ themeMode, themePreference, onThemePreferenceChange }) {
   // State
-  const [searchInput, setSearchInput] = useState(DEFAULT_CITY)
-  const [selectedCity, setSelectedCity] = useState(DEFAULT_CITY)
+  const [searchInput, setSearchInput] = useState(startupCity)
+  const [selectedCity, setSelectedCity] = useState(startupCity)
   const [weatherData, setWeatherData] = useState(null)
   const [forecastData, setForecastData] = useState([])
   const [forecastEntries, setForecastEntries] = useState([]) // Keep the full forecast list.
@@ -113,12 +155,26 @@ function App({ themeMode, themePreference, onThemePreferenceChange }) {
   const [temperatureUnit, setTemperatureUnit] = useState('celsius')
   const [searchVersion, setSearchVersion] = useState(0)
   const [settingsAnchor, setSettingsAnchor] = useState(null)
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false)
+  const [locationMessage, setLocationMessage] = useState('')
+  const [favoriteCities, setFavoriteCities] = useState(() =>
+    cleanFavoriteCities(readStoredJson(FAVORITES_STORAGE_KEY, [])),
+  )
+  const [useLocationOnStartup, setUseLocationOnStartup] = useState(startupUsesLocation)
 
   // Clear old results
   function clearWeatherResults() {
     setWeatherData(null)
     setForecastData([])
     setForecastEntries([])
+  }
+
+  // Load weather for a city and show its name in the search box
+  function applySelectedCity(cityName) {
+    setSearchInput(cityName)
+    setSelectedCity(cityName)
+    clearWeatherResults()
+    setSearchVersion((currentVersion) => currentVersion + 1) // Run the search again, even for the same city.
   }
 
   // Update search box
@@ -152,6 +208,44 @@ function App({ themeMode, themePreference, onThemePreferenceChange }) {
     handleSettingsClose()
   }
 
+  // Save or remove the current city with the star button
+  function handleToggleFavorite() {
+    if (!selectedCity) {
+      return
+    }
+
+    setFavoriteCities((currentFavorites) =>
+      isFavoriteCity(currentFavorites, selectedCity)
+        ? removeFavoriteCity(currentFavorites, selectedCity)
+        : addFavoriteCity(currentFavorites, selectedCity),
+    )
+  }
+
+  // Save the current city from the menu
+  function handleSaveCurrentCityClick() {
+    setFavoriteCities((currentFavorites) => addFavoriteCity(currentFavorites, selectedCity))
+    handleSettingsClose()
+  }
+
+  // Load a saved city from the menu
+  function handleFavoriteMenuClick(favoriteCity) {
+    setErrorMessage('')
+    setLocationMessage('')
+    applySelectedCity(favoriteCity)
+    handleSettingsClose()
+  }
+
+  // Remove a saved city without closing the menu
+  function handleRemoveFavoriteClick(event, favoriteCity) {
+    event.stopPropagation() // Keep the menu open instead of loading the city.
+    setFavoriteCities((currentFavorites) => removeFavoriteCity(currentFavorites, favoriteCity))
+  }
+
+  // Turn startup location detection on or off
+  function handleStartupLocationToggle() {
+    setUseLocationOnStartup((currentSetting) => !currentSetting)
+  }
+
   // Update unit from the menu
   function handleUnitMenuClick(nextUnit) {
     handleUnitChange(nextUnit)
@@ -174,10 +268,80 @@ function App({ themeMode, themePreference, onThemePreferenceChange }) {
 
     setIsLoading(false)
     setErrorMessage('')
+    setLocationMessage('')
     setSelectedCity(cityName)
     clearWeatherResults()
     setSearchVersion((currentVersion) => currentVersion + 1) // Run the search again, even for the same city.
   }
+
+  // Look up the city name for the device location
+  async function findCityFromDeviceLocation(apiKey) {
+    const { latitude, longitude } = await requestDeviceLocation()
+    const response = await fetch(buildReverseGeocodeUrl(latitude, longitude, apiKey))
+
+    if (!response.ok) {
+      throw new Error(await readErrorMessage(response))
+    }
+
+    const places = await response.json()
+    const detectedCity = formatDetectedCity(places[0]) // The closest place comes back first.
+
+    if (!detectedCity) {
+      throw new Error('We could not match your location to a city. Please search instead.')
+    }
+
+    return detectedCity
+  }
+
+  // Search using the device location
+  // fallbackCity keeps the app useful when startup detection fails.
+  async function startLocationSearch(fallbackCity) {
+    const apiKey = getOpenWeatherApiKey()
+
+    if (!apiKey) {
+      setErrorMessage(getMissingApiKeyMessage())
+      return
+    }
+
+    setIsDetectingLocation(true)
+    setLocationMessage('')
+
+    try {
+      const detectedCity = await findCityFromDeviceLocation(apiKey)
+
+      applySelectedCity(detectedCity) // Show the user which city was found.
+    } catch (error) {
+      setLocationMessage(error.message)
+
+      if (fallbackCity) {
+        applySelectedCity(fallbackCity)
+      }
+    } finally {
+      setIsDetectingLocation(false)
+    }
+  }
+
+  // Detect the location from the button
+  function handleUseMyLocation() {
+    startLocationSearch('') // No fallback, the current city stays on screen.
+  }
+
+  // Remember the saved cities
+  useEffect(() => {
+    saveStoredJson(FAVORITES_STORAGE_KEY, favoriteCities)
+  }, [favoriteCities])
+
+  // Remember the startup location setting
+  useEffect(() => {
+    saveStoredJson(AUTO_LOCATION_STORAGE_KEY, useLocationOnStartup)
+  }, [useLocationOnStartup])
+
+  // Detect the location once when the startup setting is on
+  useEffect(() => {
+    if (startupUsesLocation) {
+      startLocationSearch(DEFAULT_CITY) // Show the default city if detection fails.
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps -- run once on startup only
 
   // Load weather data
   useEffect(() => {
@@ -250,6 +414,7 @@ function App({ themeMode, themePreference, onThemePreferenceChange }) {
   const hasSearchFieldError = isSearchFieldError(errorMessage)
   const currentYear = new Date().getFullYear()
   const isSettingsOpen = Boolean(settingsAnchor)
+  const isCurrentCityFavorite = isFavoriteCity(favoriteCities, selectedCity)
 
   // Page layout
   return (
@@ -334,11 +499,65 @@ function App({ themeMode, themePreference, onThemePreferenceChange }) {
                 slotProps={{
                   paper: {
                     sx: {
-                      width: 190,
+                      width: 240,
                     },
                   },
                 }}
               >
+                <MenuItem disabled dense>
+                  Favorites
+                </MenuItem>
+                <MenuItem
+                  dense
+                  disabled={!selectedCity || isCurrentCityFavorite}
+                  onClick={handleSaveCurrentCityClick}
+                >
+                  {isCurrentCityFavorite ? 'Current city saved' : 'Save current city'}
+                </MenuItem>
+                {favoriteCities.length === 0 && (
+                  <MenuItem disabled dense>
+                    No saved cities yet
+                  </MenuItem>
+                )}
+                {favoriteCities.map((favoriteCity) => (
+                  <MenuItem
+                    key={favoriteCity}
+                    dense
+                    selected={favoriteCity === selectedCity}
+                    onClick={() => handleFavoriteMenuClick(favoriteCity)}
+                  >
+                    {/* City name on the left, remove button on the right */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%', minWidth: 0 }}>
+                      <Box
+                        sx={{
+                          flex: 1,
+                          minWidth: 0,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {favoriteCity}
+                      </Box>
+                      <IconButton
+                        size="small"
+                        aria-label={`Remove ${favoriteCity} from favorites`}
+                        onClick={(event) => handleRemoveFavoriteClick(event, favoriteCity)}
+                        sx={{ fontSize: '1rem', lineHeight: 1 }}
+                      >
+                        <span aria-hidden="true">×</span>
+                      </IconButton>
+                    </Box>
+                  </MenuItem>
+                ))}
+                <Divider />
+                <MenuItem disabled dense>
+                  Location
+                </MenuItem>
+                <MenuItem dense selected={useLocationOnStartup} onClick={handleStartupLocationToggle}>
+                  Use my location on startup {useLocationOnStartup ? '✓' : ''}
+                </MenuItem>
+                <Divider />
                 <MenuItem disabled dense>
                   Theme mode
                 </MenuItem>
@@ -375,10 +594,28 @@ function App({ themeMode, themePreference, onThemePreferenceChange }) {
                     onSearchSubmit={handleSearchSubmit}
                   />
                 </Box>
+
+                {/* Keep the two small buttons side by side on every screen size */}
+                <Stack direction="row" spacing={1.5} alignItems="flex-start">
+                  <Box sx={{ flex: { xs: 1, lg: '0 0 auto' }, minWidth: 0 }}>
+                    <LocationButton
+                      isDetecting={isDetectingLocation}
+                      isDisabled={isDetectingLocation || isLoading}
+                      onUseMyLocation={handleUseMyLocation}
+                    />
+                  </Box>
+
+                  <FavoriteButton
+                    isFavorite={isCurrentCityFavorite}
+                    isDisabled={!selectedCity}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
+                </Stack>
               </Stack>
             </Stack>
           </Box>
 
+          <ErrorAlert message={locationMessage} title="Location issue" />
           <ErrorAlert message={errorMessage} />
           <LoadingSpinner isLoading={isLoading} />
 
